@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.codehaus.plexus.util.IOUtil;
 import org.mybatis.generator.api.MyBatisGenerator;
 import org.mybatis.generator.config.Configuration;
 import org.mybatis.generator.internal.DefaultShellCallback;
@@ -22,6 +23,9 @@ public class GeneratorPlugin extends AbstractMojo {
     @Parameter(name="configurationFile", defaultValue = "src/main/resources/generatorConfig.yml", readonly = true )
     private File configurationFile;
 
+    @Parameter(name="resource", defaultValue = "src/main/resources/generator-placeholder.properties", readonly = true )
+    private String resource;
+
     @SneakyThrows
     @Override
     public void execute() {
@@ -30,7 +34,9 @@ public class GeneratorPlugin extends AbstractMojo {
         log.info("Loading configuration file");
         org.mybatis.generator.config.xml.ConfigurationParser cp = new org.mybatis.generator.config.xml.ConfigurationParser(warnings);
         ConfigurationParser creatXml = new ConfigurationParser();
-        InputStream xml = creatXml.createXML(configurationFile);
+        creatXml.setPluginContext(getPluginContext());
+        InputStream xml = creatXml.createXML(configurationFile,resource);
+        IOUtil.copy(xml, System.out);
         log.info("Configuration file loaded");
         log.info("Parsing configuration file, please wait...");
         Configuration config = cp.parseConfiguration(xml);
@@ -39,4 +45,5 @@ public class GeneratorPlugin extends AbstractMojo {
         myBatisGenerator.generate(null);
         log.info("Mybatis code files are successfully generated");
     }
+
 }
