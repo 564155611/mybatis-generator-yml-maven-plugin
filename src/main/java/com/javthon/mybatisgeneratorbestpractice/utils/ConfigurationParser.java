@@ -56,8 +56,8 @@ public class ConfigurationParser {
         String targetRuntime = (String) objectMap.get("targetRuntime");
         context.setAttribute("targetRuntime", targetRuntime);
         // set properties of context
-        Map<String, Object> propertiesMap = (Map<String, Object>) objectMapFromSource.get("properties");
-        Element element = setContextProperties(document, propertiesMap);
+        Map<String, Object> propertiesMap = (Map<String, Object>) objectMap.get("properties");
+        Element element = setContextProperties(propertiesMap,document, context);
         // parse plugin configuration
         parsePlugins(objectMap, document, context);
 
@@ -95,13 +95,14 @@ public class ConfigurationParser {
 
     }
 
-    private Element setContextProperties(Document document, Map<String, Object> propertiesMap) {
+    private Element setContextProperties(Map<String, Object> propertiesMap, Document document, Element context) {
         Element element = document.createElement("generatorConfiguration");
         propertiesMap.forEach((k, v) -> {
             Element propertyEle = document.createElement("property");
             String value = String.valueOf(v);
-            propertyEle.setAttribute(k, value);
-
+            propertyEle.setAttribute("name", k);
+            propertyEle.setAttribute("value", value);
+            context.appendChild(propertyEle);
         });
         return element;
     }

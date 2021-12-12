@@ -6,7 +6,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.codehaus.plexus.util.IOUtil;
 import org.mybatis.generator.api.MyBatisGenerator;
 import org.mybatis.generator.config.Configuration;
 import org.mybatis.generator.internal.DefaultShellCallback;
@@ -36,7 +35,6 @@ public class GeneratorPlugin extends AbstractMojo {
         ConfigurationParser creatXml = new ConfigurationParser();
         creatXml.setPluginContext(getPluginContext());
         InputStream xml = creatXml.createXML(configurationFile,resource);
-        IOUtil.copy(xml, System.out);
         log.info("Configuration file loaded");
         log.info("Parsing configuration file, please wait...");
         Configuration config = cp.parseConfiguration(xml);
